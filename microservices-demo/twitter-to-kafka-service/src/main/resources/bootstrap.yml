@@ -1,0 +1,20 @@
+# Required in case of loading configuration in bootstrap phase which has priority over application.yml
+spring:
+  application:
+    name: twitter-to-kafka-service
+  # Para obtener el archivo de propiedades "config-client-twitter_to_kafka.yml" del servidor de configuraciones
+  profiles:
+    active: twitter_to_kafka
+  cloud:
+    config:
+      # Para obtener el archivo de propiedades "config-client-twitter_to_kafka.yml" del servidor de configuraciones
+      # Es decir, obtiene el archivo con nombre "config.name"-"profiles.active".yml
+      name: twitter-to-kafka-service,config-client
+      uri: http://localhost:8888
+      # Credenciales requeridas por el servidor de configuraciones
+      username: spring_cloud_user
+      # "cipher" es para que Spring Boot entienda que el valor de esta propiedad fue encriptado usando JCE
+      # Para ello, hemos usado el endpoint "/encrypt que nos proporciona "Spring Cloud Config"
+      # Hace falta establecer previamente la variable de entorno "ENCRYPT_KEY" con la clave para encriptar/desencriptar
+      # Spring Boot usará automáticamente dicha variable de entorno para realizar la desencriptación automática en tiempo de ejecución usando JCE
+      password: '{cipher}2855a564ed585fca2ff27c96faa67b23911222d3d4ff7c72fadf412fc7f015397cd794d7ce4cf9ff25b18939a51f7f7e'

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuración común de Logback para todos los servicios -->
+<included>
+    <!-- Appender para escribir logs en consola -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <!-- Patrón a usar en las trazas de los logs -->
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <!-- Appender para escribir logs en un archivo -->
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Ruta y nombre del archivo -->
+        <file>${DEV_HOME}/${APP_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- Patrón a usar en las trazas de los logs -->
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </encoder>
+        <!-- Política de "rolling" para crear un nuevo archivo a diario y cuando el antiguo supera el tamaño máximo de 10 MB -->
+        <!-- Esta política también almacenará los archivos viejos en la ruta indicada por la etiqueta "fileNamePattern" -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${DEV_HOME}/archived/${APP_NAME}-log.%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Hacemos que las clases dentro del paquete "com.microservices.demo" usen estos 2 appenders y establecemos el nivel de logging a "info" -->
+    <!-- Nota: Niveles de logging: trace > debug > info > warn > error -->
+    <logger name="com.microservices.demo" level="info" additivity="false">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <!-- Establece el nivel de logging "info" para el "root" logger y le asocia estos 2 appenders -->
+    <!-- Esta configuración es sobrescrita por el logger anterior, aunque, en este caso, da igual porque usan los mismos valores -->
+    <root level="info">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</included>

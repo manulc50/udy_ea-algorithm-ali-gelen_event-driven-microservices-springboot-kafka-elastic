@@ -1,0 +1,23 @@
+# Required in case of loading configuration in bootstrap phase which has priority over application.yml
+spring:
+  application:
+    name: twitter-to-kafka-service
+  # Para obtener el archivo de propiedades "config-client-twitter_to_kafka.yml" del servidor de configuraciones
+  profiles:
+    active: twitter_to_kafka
+  cloud:
+    config:
+      # Para obtener el archivo de propiedades "config-client-twitter_to_kafka.yml" del servidor de configuraciones
+      # Es decir, obtiene el archivo con nombre "config.name"-"profiles.active".yml
+      name: twitter-to-kafka-service,config-client
+      uri: http://localhost:8888
+      # Credenciales requeridas por el servidor de configuraciones
+      username: spring_cloud_user
+      # "ENC" es para que Spring Boot entienda que el valor de esta propiedad fue encriptado usando Jasypt
+      password: ENC(9AmLI3S8Dvu4brc3KuSQyeduBAvHTQbsFbX4PHT7B0TsypnwTJIQ0YxD9KJCk1h6ki3LSlNbI8TB1dik13GxOw==)
+
+# Configuración para que Spring Boot realice la desencriptación automática en tiempo de ejecución usando Jasypt
+# Nota: Opcional porque por defecto Spring Boot lee la variable de entorno JASYPT_ENCRYPTOR_PASSWORD(establecida previamente) para obtener la contraseña
+#jasypt:
+  #encryptor:
+    #password: ${JASYPT_ENCRYPTOR_PASSWORD}

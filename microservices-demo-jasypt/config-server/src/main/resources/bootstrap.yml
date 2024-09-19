@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: configserver
+  cloud:
+    config:
+      server:
+        git:
+          # Por ahora usamos un repositorio local
+          # Nota: El contexto "." hace referencia a la raíz del pyoecto "microservices-demo"
+          uri: file:./config-server-repository
+          # Para clonar el repositorio de configuraciones justo en el arranque de este servidor de configuraciones
+          clone-on-start: true
+      # Si este servidor de configuraciones no puede alcanzar el repositorio de configuraciones, finalizará su ejecución inmediatamente
+      fail-fast: true
+  # Configuración de la autenticación básica
+  security:
+    user:
+      name: spring_cloud_user
+      # "ENC" es para que Spring Boot entienda que el valor de esta propiedad fue encriptado usando Jasypt
+      password: ENC(9AmLI3S8Dvu4brc3KuSQyeduBAvHTQbsFbX4PHT7B0TsypnwTJIQ0YxD9KJCk1h6ki3LSlNbI8TB1dik13GxOw==)
+
+# Configuración para que Spring Boot realice la desencriptación automática en tiempo de ejecución usando Jasypt
+# Nota: Opcional porque por defecto Spring Boot lee la variable de entorno JASYPT_ENCRYPTOR_PASSWORD(establecida previamente) para obtener la contraseña
+#jasypt:
+  #encryptor:
+    #password: ${JASYPT_ENCRYPTOR_PASSWORD}

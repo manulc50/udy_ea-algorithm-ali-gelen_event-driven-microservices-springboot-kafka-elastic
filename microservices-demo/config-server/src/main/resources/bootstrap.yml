@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: configserver
+  cloud:
+    config:
+      server:
+        git:
+          # Por ahora usamos un repositorio local
+          # Nota: El contexto "." hace referencia a la raíz del pyoecto "microservices-demo"
+          uri: file:./config-server-repository
+          # Para clonar el repositorio de configuraciones justo en el arranque de este servidor de configuraciones
+          clone-on-start: true
+      # Si este servidor de configuraciones no puede alcanzar el repositorio de configuraciones, finalizará su ejecución inmediatamente
+      fail-fast: true
+  # Configuración de la autenticación básica
+  security:
+    user:
+      name: spring_cloud_user
+      # "cipher" es para que Spring Boot entienda que el valor de esta propiedad fue encriptado usando JCE
+      # Para ello, hemos usado el endpoint "/encrypt que nos proporciona "Spring Cloud Config"
+      # Hace falta establecer previamente la variable de entorno "ENCRYPT_KEY" con la clave para encriptar/desencriptar
+      # Spring Boot usará automáticamente dicha variable de entorno para realizar la desencriptación automática en tiempo de ejecución usando JCE
+      password: '{cipher}2855a564ed585fca2ff27c96faa67b23911222d3d4ff7c72fadf412fc7f015397cd794d7ce4cf9ff25b18939a51f7f7e'

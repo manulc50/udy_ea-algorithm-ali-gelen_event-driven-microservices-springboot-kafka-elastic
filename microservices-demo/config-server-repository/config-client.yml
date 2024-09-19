@@ -1,0 +1,7 @@
+# Archivo de propiedades comunes para los servicios
+spring:
+  cloud:
+    config:
+      # Para permitir poder sobrescribir propiedades obtenidas del servidor de configuraciones en cada servicio
+      allow-override: true
+      override-none: true

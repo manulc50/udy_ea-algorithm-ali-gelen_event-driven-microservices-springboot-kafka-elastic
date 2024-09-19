@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  twitter-to-kafka-service:
+    image: ${GROUP_ID}/twitter.to.kafka.service:${SERVICE_VERSION:-latest}
+    ports:
+      - "5005:5005"
+    volumes:
+    #  - "./docker-logs:/workspace/twitter-to-kafka-service/logs"
+      - "./check-config-server-started.sh:/usr/local/bin/check-config-server-started.sh"
+    # Como el script de abajo realiza la instalación del comando "curl", es necesario tener permisos root
+    user: root
+    # Sustituimos el comando por defecto que se ejecuta al iniciarse el servicio por este otro
+    # Este comando ejecuta este script que verifica que el servidor de configuraciones está levantado y ejecutándose y, posteriormente, ejecuta la aplicación Spring Boot
+    entrypoint: ["check-config-server-started.sh"]
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m"
+      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=info"
+      - "LOGGING_LEVEL_ROOT=info"
+      - "KAFKA-CONFIG_TOPIC-NAME=twitter-topic"
+      - "KAFKA-CONFIG_BOOTSTRAP-SERVERS=kafka-broker-1:9092, kafka-broker-2:9092, kafka-broker-3:9092"
+      - "KAFKA-CONFIG_SCHEMA-REGISTRY-URL=http://schema-registry:8081"
+      - "TWITTER-TO-KAFKA-SERVICE_ENABLE-MOCK-TWEETS=true"
+      - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
+      # Para que Spring Boot desencripte usando JCE la información encriptada del archivo bootstrap.yml
+      - "ENCRYPT_KEY=${ENCRYPT_KEY}"
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+  config-server:
+    image: ${GROUP_ID}/config.server:${SERVICE_VERSION:-latest}
+    ports:
+      - "5006:5006"
+    volumes:
+      #- "./docker-logs:/workspace/config-server/logs"
+      - ../config-server-repository:/config-server-repository
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006 -Xms128m -Xmx256m"
+      - "ENCRYPT_KEY=${ENCRYPT_KEY}"
+      - "SPRING_CLOUD_CONFIG_SERVER_GIT_URI=file://config-server-repository"
+    networks:
+      - ${GLOBAL_NETWORK:-services}
